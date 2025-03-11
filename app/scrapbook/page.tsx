@@ -538,22 +538,12 @@ export default function ScrapbookPage() {
 
   // Toggle play/pause
   const togglePlay = () => {
-    if (audioRef.current) {
-      if (isPlaying) {
-        audioRef.current.pause()
-      } else {
-        audioRef.current.play().catch((e) => console.error("Error playing audio", e))
-      }
-      setIsPlaying(!isPlaying)
-    }
+    setIsPlaying(!isPlaying)
   }
 
   // Toggle mute
   const toggleMute = () => {
-    if (audioRef.current) {
-      audioRef.current.muted = !isMuted
-      setIsMuted(!isMuted)
-    }
+    setIsMuted(!isMuted)
   }
 
   // Clear all elements
@@ -852,7 +842,7 @@ export default function ScrapbookPage() {
                               max={45}
                               step={1}
                               onValueChange={(value) => {
-                                setSelfies(selfies.map((s) => (s.id === selfie.id ? { ...s, rotation: value[0] } : s)))
+                                scaleElement("selfie", selfie.id, value[0])
                               }}
                             />
                             <Button variant="outline" size="sm" onClick={() => rotateElement("selfie", selfie.id, 5)}>
@@ -1002,81 +992,113 @@ export default function ScrapbookPage() {
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
         >
-          <div className="bg-pink-100 p-4 shadow-md rounded-md flex items-center justify-center">
-            {!hiddenMessageUnlocked ? (
-              <img src="/reveal.png" alt="Reveal Easter Egg" className="w-16 h-16" />
-            ) : (
-              <div className="flex items-center">
-                <img src="/heart-icon.png" alt="Heart Icon" className="w-5 h-5 mr-2" />
+          <div className="bg-pink-100 p-4 shadow-md rounded-md w-48 flex items-center gap-2">
+            {hiddenMessageUnlocked ? (
+              <>
+                <Heart className="w-5 h-5 text-pink-500 animate-pulse" />
                 <p className="text-sm">Thank you for sharing a piece of yourself with me! You're amazing! ❤️</p>
-              </div>
+              </>
+            ) : (
+              <>
+                <Lock className="w-5 h-5 text-pink-500" />
+                <p className="text-sm">Click to reveal a secret message</p>
+              </>
             )}
           </div>
         </motion.div>
 
         {/* Vinyl Music Player */}
         <motion.div
-          className="absolute right-8 bottom-8 w-[280px] bg-indigo-600 rounded-2xl shadow-xl p-4 text-white"
+          className="absolute right-8 bottom-8 w-[300px] bg-gray-900 rounded-lg shadow-xl p-4 text-white"
           style={{ zIndex: 1000 }}
           initial={{ y: 50, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ delay: 0.7, duration: 0.5 }}
         >
           <div className="flex items-center justify-between mb-3">
-            <h3 className="font-medium text-sm">Your Fav Song</h3>
-            <Button variant="ghost" size="sm" className="h-6 w-6 p-0 text-white hover:text-white/80">
+            <h3 className="font-garamond font-bold text-sm">Vinyl Player</h3>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-6 w-6 p-0 text-white"
+              onClick={() => {/* Minimize functionality to transform into vinyl */}}
+            >
               <Minus className="w-3 h-3" />
             </Button>
           </div>
 
-          <div className="flex items-center gap-4">
-            {/* Vinyl record */}
+          <div className="flex items-center justify-center mb-3">
             <motion.div
-              className="w-12 h-12 rounded-full relative overflow-hidden"
+              className="w-24 h-24 relative overflow-hidden"
               animate={{ rotate: vinylRotation }}
               transition={{ duration: 0.1, ease: "linear" }}
             >
               <img 
                 src="/vinyl.png" 
-                alt="Vinyl" 
-                className="w-full h-full object-cover"
+                alt="Vinyl record"
+                className="w-full h-full object-contain"
               />
             </motion.div>
-
-            {/* Song info and controls */}
-            <div className="flex-1">
-              <div className="text-sm font-medium truncate">{songDetails.title}</div>
-              <div className="text-xs text-white/70 truncate">{songDetails.artist}</div>
-
-              <div className="flex items-center gap-2 mt-2">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="h-8 w-8 p-0 text-white hover:bg-white/10 rounded-full"
-                  onClick={togglePlay}
-                >
-                  {isPlaying ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
-                </Button>
-
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="h-8 w-8 p-0 text-white hover:bg-white/10 rounded-full"
-                  onClick={toggleMute}
-                >
-                  {isMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
-                </Button>
-              </div>
-            </div>
           </div>
 
-          {/* Add song button */}
-          <Button 
-            className="w-full mt-3 bg-indigo-500 hover:bg-indigo-400 text-white"
-            onClick={() => setSongUrl(song, songDetails.title, songDetails.artist)}
-          >
-            Add your fav song ↗
-          </Button>
+          <div className="flex flex-col items-center">
+            <div className="text-xs font-bold truncate">{songDetails.title}</div>
+            <div className="text-xs text-gray-400 truncate">{songDetails.artist}</div>
+
+            <div className="flex items-center justify-between mt-2">
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-8 w-8 p-0 text-white hover:bg-gray-800 rounded-full"
+                onClick={togglePlay}
+              >
+                {isPlaying ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
+              </Button>
+
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-8 w-8 p-0 text-white hover:bg-gray-800 rounded-full"
+                onClick={toggleMute}
+              >
+                {isMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
+              </Button>
+            </div>
+
+            {/* Song Input Modal */}
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button className="mt-3 w-full bg-[#6366f1] text-white hover:bg-[#5558e6] rounded-xl">
+                  {songDetails.title === "Add your favorite song" ? "Add your fav song" : "Edit your song"}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-80 z-50 bg-light-blue-100">
+                <div className="space-y-4">
+                  <h4 className="font-medium">{songDetails.title === "Add your favorite song" ? "Add Your Favorite Song" : "Edit Your Song"}</h4>
+                  <div className="space-y-2">
+                    <Label htmlFor="song-url">Song URL</Label>
+                    <Input
+                      id="song-url"
+                      placeholder="YouTube, Spotify, etc."
+                      value={song}
+                      onChange={(e) => setSong(e.target.value)}
+                    />
+                  </div>
+                  <Button 
+                    onClick={() => {
+                      setSongDetails({ title: song, artist: songDetails.artist });
+                      // Optionally reset the song details if needed
+                      setSong(""); // Clear input after setting
+                    }} 
+                    className="w-full bg-[#6366f1] text-white hover:bg-[#5558e6]"
+                  >
+                    <Music className="w-4 h-4 mr-2" />
+                    {songDetails.title === "Add your favorite song" ? "Set Song" : "Update Song"}
+                  </Button>
+                </div>
+              </PopoverContent>
+            </Popover>
+          </div>
         </motion.div>
       </div>
 
@@ -1198,5 +1220,3 @@ export default function ScrapbookPage() {
     </div>
   )
 }
-
-
