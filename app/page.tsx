@@ -14,24 +14,6 @@ export default function WelcomePage() {
         backgroundPosition: "center",
       }}
     >
-      {/* Grid lines */}
-      <div className="absolute inset-0 grid grid-cols-12 grid-rows-12 pointer-events-none">
-        {Array(13)
-          .fill(0)
-          .map((_, i) => (
-            <div
-              key={`v-${i}`}
-              className="absolute h-full w-px bg-blue-200/30"
-              style={{ left: `${(i / 12) * 100}%` }}
-            />
-          ))}
-        {Array(13)
-          .fill(0)
-          .map((_, i) => (
-            <div key={`h-${i}`} className="absolute w-full h-px bg-blue-200/30" style={{ top: `${(i / 12) * 100}%` }} />
-          ))}
-      </div>
-
       {/* Clouds background effect */}
       <div className="absolute inset-0 bg-[url('/clouds.png')] bg-cover opacity-50 pointer-events-none"></div>
 
@@ -44,7 +26,14 @@ export default function WelcomePage() {
           animate={{ scale: 1, opacity: 1 }}
           transition={{ duration: 0.5, ease: "easeOut" }}
         >
-          <Image src="/forget-me-not.png" alt="Forget Me Not Stamp" width={120} height={150} className="mx-auto" />
+          <Image 
+            src="/duck.gif" 
+            alt="Duck Animation" 
+            width={120} 
+            height={150} 
+            className="mx-auto h-auto" 
+            unoptimized 
+          />
         </motion.div>
 
         {/* Main content */}
